@@ -12,7 +12,7 @@ export interface Config {
 
 export const config: Config = {
 	// WhatsApp client settings
-	HEADLESS: false,
+	HEADLESS: true,
 	SESSION_PATH: "./config/session",
 
 	// Delay settings (dalam milliseconds)

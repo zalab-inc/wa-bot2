@@ -1,0 +1,156 @@
+## SpecStory
+
+## Understanding WhatsApp Sender Application (1/29/2025, 3:42:28 PM)
+
+_**User**_
+
+@README.md baca aja, biar paham
+
+---
+
+_**Assistant**_
+
+I'll help you understand the README.md file. This is a WhatsApp Sender application with some interesting features. Let me break down the key points:
+
+**Main Features:**
+- Automated WhatsApp message sending
+- Random message templates
+- Random delays between messages
+- Automatic retry on failure
+- Delivery reports
+
+**Running the App:**
+There are several commands available:
+- `pnpm dev` - Development mode with auto-reload
+- `pnpm start` - Production mode
+- `pnpm build` - Build the TypeScript app
+- `pnpm serve` - Run the built JavaScript version
+
+**Important Configuration:**
+The app can be configured in `src/config/env.ts` with settings like:
+- WhatsApp client settings (headless mode, session path)
+- Message delays (15-20 seconds between messages)
+- Additional delays every 5 messages (20-30 seconds)
+
+**How to Use:**
+1. Install dependencies with `pnpm install`
+2. Set up recipient numbers in `src/data/recipients.ts`
+3. Configure message templates in `src/data/template.ts`
+4. Run the app with `pnpm dev`
+5. Scan the QR code with WhatsApp on your phone
+
+**Message Sending Flow:**
+- Messages are sent sequentially to each number
+- Random delay of 15-20 seconds between messages
+- Additional 20-30 second delay every 5 messages
+- 3 retry attempts if sending fails
+
+**Monitoring & Error Handling:**
+- Shows WhatsApp connection status
+- Message sending progress
+- Delay durations
+- Delivery reports (success/failure)
+- Phone number format validation
+- WhatsApp number verification
+- Automatic retries
+- Detailed error reporting
+
+**Best Practices:**
+1. Use verified WhatsApp numbers
+2. Don't set delays too short to avoid blocking
+3. Use varied message templates
+4. Monitor the sending process
+
+**Troubleshooting:**
+- QR code issues: Clear browser sessions and session folder
+- Failed sends: Check number format and WhatsApp registration
+- Errors: Check logs and restart if needed
+
+Would you like me to dive deeper into any particular aspect of the application?
+
+---
+
+_**User**_
+
+@plan.md @plan.md @package.json @src
+baca aja biar paham
+
+---
+
+_**Assistant**_
+
+Let me help you understand the project structure and technical details from the plan and files.
+
+**Project Overview:**
+This is a WhatsApp message sender built with TypeScript and `whatsapp-web.js`.
+
+**Key Technologies:**
+- `whatsapp-web.js` - Main WhatsApp API library
+- `puppeteer` - Browser automation
+- `TypeScript` - Programming language
+- `qrcode-terminal` - For QR code display in terminal
+- `dotenv` - Environment configuration
+
+**Project Structure:**
+```
+wa-sender-node/
+├── src/
+│   ├── config/      - Environment and configuration
+│   ├── services/    - WhatsApp service implementation
+│   ├── utils/       - Helper functions (validators)
+│   ├── data/        - Message templates and recipients
+│   └── index.ts     - Main application entry
+```
+
+**Core Components:**
+
+1. **WhatsApp Service** (`services/whatsapp.service.ts`):
+   - Handles WhatsApp client initialization
+   - QR code generation for authentication
+   - Message sending functionality
+   - Event handling (ready, auth, failures)
+
+2. **Validators** (`utils/validator.ts`):
+   - Phone number validation
+   - Number formatting (ensuring proper country code)
+
+3. **Environment Config** (`config/env.ts`):
+   - Headless mode configuration
+   - Session path settings
+
+**Running the Application:**
+```bash
+pnpm dev    # Development with auto-reload
+pnpm start  # Direct TypeScript execution
+pnpm build  # Compile to JavaScript
+pnpm serve  # Run compiled version
+```
+
+**Security Features:**
+- Local authentication storage
+- Phone number validation
+- Secure session management
+- Error handling
+- Environment variable usage
+
+**Technical Implementation Details:**
+- Uses Puppeteer for browser automation
+- Implements automatic reconnection
+- Validates phone numbers before sending
+- Supports message templates
+- Includes delivery tracking
+
+**Error Handling:**
+- Phone number validation
+- WhatsApp number existence verification
+- Session management
+- Connection error handling
+- Detailed error logging
+
+Would you like me to dive deeper into any specific aspect of the implementation or explain any particular component in more detail?
+
+---
+
+
+
+---
