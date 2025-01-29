@@ -1,4 +1,4 @@
-const messagesTemplate = [
+export const messagesTemplate = [
 	{
 		id: 1,
 		message:
