@@ -1,113 +1,104 @@
-import { WhatsAppService, WhatsAppError } from "./services/whatsapp.service";
-import {
-	MessageService,
-	type MessageRequest,
-} from "./services/message.service";
-import { recipients } from "./data/recipients";
-import { messagesTemplate } from "./data/messages";
+import { Client, LocalAuth } from "whatsapp-web.js";
 import { config } from "./config/env";
 
-async function main() {
-	const whatsapp = new WhatsAppService();
-	const messageService = new MessageService(whatsapp);
+class WhatsAppService {
+	private client: Client;
+	private readyCallback?: () => Promise<void>;
 
-	try {
-		await whatsapp.initialize();
+	constructor() {
+		this.client = new Client({
+			authStrategy: new LocalAuth(),
+			puppeteer: {
+				headless: false,
+				args: [
+					"--no-sandbox",
+					"--disable-setuid-sandbox",
+					"--disable-dev-shm-usage",
+				],
+			},
+		});
 
-		// Menunggu client siap
-		whatsapp.onReady(async () => {
-			try {
-				// Kirim pesan template ke semua recipients
-				console.log("Mulai mengirim pesan template ke recipients...");
+		this.setupEventHandlers();
+	}
 
-				// Kirim pesan satu per satu dengan ID
-				let totalSent = 0;
-				const failed: { phoneNumber: string; error: string }[] = [];
+	private setupEventHandlers() {
+		this.client.on("loading_screen", (percent, message) => {
+			console.log("LOADING SCREEN", percent, message);
+		});
 
-				for (const recipient of recipients) {
-					try {
-						// Pilih template pesan secara random
-						const template =
-							messagesTemplate[
-								Math.floor(Math.random() * messagesTemplate.length)
-							];
+		this.client.on("qr", (qr) => {
+			console.log("QR Code received. Scan with WhatsApp:");
+			require("qrcode-terminal").generate(qr, { small: true });
+		});
 
-						await whatsapp.sendMessage(
-							recipient.phone.toString(),
-							template.message,
-							recipient.id,
-							template.id,
-						);
-
-						totalSent++;
-
-						// Delay sebelum pesan berikutnya
-						if (recipient !== recipients[recipients.length - 1]) {
-							// Cek apakah perlu delay khusus setiap 5 pesan
-							const isPerFiveMessages = totalSent > 0 && totalSent % 5 === 0;
-							let delayTime;
-
-							if (isPerFiveMessages) {
-								delayTime = Math.floor(
-									Math.random() *
-										(config.MAX_DELAY_PER_5_MESSAGES -
-											config.MIN_DELAY_PER_5_MESSAGES +
-											1) +
-										config.MIN_DELAY_PER_5_MESSAGES,
-								);
-								console.log(
-									`Menunggu ${(delayTime / 1000).toFixed(3)} detik setelah mengirim 5 pesan...`,
-								);
-							} else {
-								delayTime = Math.floor(
-									Math.random() *
-										(config.MAX_DELAY_PER_MESSAGE -
-											config.MIN_DELAY_PER_MESSAGE +
-											1) +
-										config.MIN_DELAY_PER_MESSAGE,
-								);
-								console.log(
-									`Menunggu ${(delayTime / 1000).toFixed(3)} detik sebelum mengirim pesan berikutnya...`,
-								);
-							}
-
-							await new Promise((resolve) => setTimeout(resolve, delayTime));
-						}
-					} catch (error) {
-						failed.push({
-							phoneNumber: recipient.phone.toString(),
-							error: error instanceof Error ? error.message : "Unknown error",
-						});
-					}
-				}
-
-				console.log("Hasil pengiriman:", {
-					totalBerhasil: totalSent,
-					totalGagal: failed.length,
-					detailGagal: failed,
+		this.client.on("ready", async () => {
+			const info = await this.client.info;
+			if (info) {
+				console.log(`Phone number: ${info.wid.user}`);
+			}
+			console.log("Client is ready to send messages!");
+			if (this.readyCallback) {
+				this.readyCallback().catch((error) => {
+					console.error("Error in ready callback:", error);
 				});
-			} catch (error) {
-				if (error instanceof WhatsAppError) {
-					console.error("Gagal mengirim pesan:", error.message);
-				} else {
-					console.error(
-						"Unexpected error:",
-						error instanceof Error ? error.message : "Unknown error",
-					);
-				}
 			}
 		});
-	} catch (error) {
-		if (error instanceof WhatsAppError) {
-			console.error("WhatsApp error:", error.message);
-		} else {
-			console.error(
-				"Unexpected error:",
-				error instanceof Error ? error.message : "Unknown error",
-			);
+
+		this.client.on("authenticated", () => {
+			console.log("Authenticated successfully!");
+		});
+
+		this.client.on("auth_failure", (msg) => {
+			console.error("Authentication failed:", msg);
+		});
+
+		this.client.on("disconnected", (reason) => {
+			console.log("Client was disconnected", reason);
+		});
+
+		// Menambahkan handler untuk pesan masuk
+		this.client.on("message", async (message) => {
+			console.log("Message received:", message.body);
+			// Balas setiap pesan dengan "Pong"
+			await message.reply("Pong");
+		});
+	}
+
+	public onReady(callback: () => Promise<void>) {
+		this.readyCallback = callback;
+	}
+
+	public async initialize() {
+		try {
+			await this.client.initialize();
+		} catch (error) {
+			console.error("Failed to initialize WhatsApp client:", error);
+			process.exit(1);
 		}
+	}
+}
+
+const whatsappService = new WhatsAppService();
+
+// Contoh penggunaan callback onReady
+whatsappService.onReady(async () => {
+	console.log("WhatsApp service is ready to use!");
+});
+
+// Handle process termination
+process.on("SIGINT", async () => {
+	console.log("Shutting down...");
+	process.exit(0);
+});
+
+// Inisialisasi WhatsApp service
+async function startWhatsAppService() {
+	try {
+		await whatsappService.initialize();
+	} catch (error) {
+		console.error("Failed to initialize WhatsApp service:", error);
 		process.exit(1);
 	}
 }
 
-main();
+startWhatsAppService();
