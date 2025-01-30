@@ -3,7 +3,7 @@ import { config } from "./env";
 
 // Initialize database connection
 export const db = knex({
-	client: "mysql",
+	client: "mysql2",
 	connection: {
 		host: "localhost",
 		user: "root",
