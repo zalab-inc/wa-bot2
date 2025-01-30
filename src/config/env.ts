@@ -17,9 +17,9 @@ export const config: Config = {
 
 	// Delay settings (dalam milliseconds)
 	MIN_DELAY_PER_MESSAGE: 15000, // 15 detik
-	MAX_DELAY_PER_MESSAGE: 20000, // 20 detik
+	MAX_DELAY_PER_MESSAGE: 30000, // 30 detik
 
 	// Delay settings per 5 messages
-	MIN_DELAY_PER_5_MESSAGES: 20000, // 20 detik
-	MAX_DELAY_PER_5_MESSAGES: 30000, // 30 detik
+	MIN_DELAY_PER_5_MESSAGES: 100000, // 100 detik
+	MAX_DELAY_PER_5_MESSAGES: 150000, // 150 detik
 };

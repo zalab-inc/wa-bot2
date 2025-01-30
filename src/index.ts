@@ -4,30 +4,8 @@ import {
 	type MessageRequest,
 } from "./services/message.service";
 import { recipients } from "./data/recipients";
-
-// Import dan export template messages
-const messagesTemplate = [
-	{
-		id: 1,
-		message: "Halo, apa kabar hari ini? Semoga sehat selalu ya!",
-	},
-	{
-		id: 2,
-		message: "Hai! Bagaimana kabarmu hari ini?",
-	},
-	{
-		id: 3,
-		message: "Semoga harimu menyenangkan! Beritahu saya jika butuh bantuan.",
-	},
-	{
-		id: 4,
-		message: "Selamat siang! Sekedar menyapa.",
-	},
-	{
-		id: 5,
-		message: "Hai! Bagaimana minggu ini berjalan?",
-	},
-];
+import { messagesTemplate } from "./data/messages";
+import { config } from "./config/env";
 
 async function main() {
 	const whatsapp = new WhatsAppService();
@@ -41,16 +19,72 @@ async function main() {
 			try {
 				// Kirim pesan template ke semua recipients
 				console.log("Mulai mengirim pesan template ke recipients...");
-				const results = await messageService.sendTemplateToRecipients(
-					recipients,
-					messagesTemplate,
-					{ randomTemplate: true },
-				);
+
+				// Kirim pesan satu per satu dengan ID
+				let totalSent = 0;
+				const failed: { phoneNumber: string; error: string }[] = [];
+
+				for (const recipient of recipients) {
+					try {
+						// Pilih template pesan secara random
+						const template =
+							messagesTemplate[
+								Math.floor(Math.random() * messagesTemplate.length)
+							];
+
+						await whatsapp.sendMessage(
+							recipient.phone.toString(),
+							template.message,
+							recipient.id,
+							template.id,
+						);
+
+						totalSent++;
+
+						// Delay sebelum pesan berikutnya
+						if (recipient !== recipients[recipients.length - 1]) {
+							// Cek apakah perlu delay khusus setiap 5 pesan
+							const isPerFiveMessages = totalSent > 0 && totalSent % 5 === 0;
+							let delayTime;
+
+							if (isPerFiveMessages) {
+								delayTime = Math.floor(
+									Math.random() *
+										(config.MAX_DELAY_PER_5_MESSAGES -
+											config.MIN_DELAY_PER_5_MESSAGES +
+											1) +
+										config.MIN_DELAY_PER_5_MESSAGES,
+								);
+								console.log(
+									`Menunggu ${(delayTime / 1000).toFixed(3)} detik setelah mengirim 5 pesan...`,
+								);
+							} else {
+								delayTime = Math.floor(
+									Math.random() *
+										(config.MAX_DELAY_PER_MESSAGE -
+											config.MIN_DELAY_PER_MESSAGE +
+											1) +
+										config.MIN_DELAY_PER_MESSAGE,
+								);
+								console.log(
+									`Menunggu ${(delayTime / 1000).toFixed(3)} detik sebelum mengirim pesan berikutnya...`,
+								);
+							}
+
+							await new Promise((resolve) => setTimeout(resolve, delayTime));
+						}
+					} catch (error) {
+						failed.push({
+							phoneNumber: recipient.phone.toString(),
+							error: error instanceof Error ? error.message : "Unknown error",
+						});
+					}
+				}
 
 				console.log("Hasil pengiriman:", {
-					totalBerhasil: results.totalSent,
-					totalGagal: results.failed.length,
-					detailGagal: results.failed,
+					totalBerhasil: totalSent,
+					totalGagal: failed.length,
+					detailGagal: failed,
 				});
 			} catch (error) {
 				if (error instanceof WhatsAppError) {

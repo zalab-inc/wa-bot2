@@ -40,7 +40,11 @@ export class WhatsAppService {
 			require("qrcode-terminal").generate(qr, { small: true });
 		});
 
-		this.client.on("ready", () => {
+		this.client.on("ready", async () => {
+			const info = await this.client.info;
+			if (info) {
+				console.log(`Phone number: ${info.wid.user}`);
+			}
 			console.log("Client is ready to send messages!");
 			if (this.readyCallback) {
 				this.readyCallback().catch((error) => {
@@ -75,6 +79,8 @@ export class WhatsAppService {
 	public async sendMessage(
 		phoneNumber: string,
 		message: string,
+		recipientId?: number,
+		messageId?: number,
 	): Promise<void> {
 		try {
 			if (!validatePhoneNumber(phoneNumber)) {
@@ -91,7 +97,10 @@ export class WhatsAppService {
 			}
 
 			await this.client.sendMessage(chatId, message);
-			console.log(`Message sent successfully to ${formattedNumber}`);
+			// Log ketika pesan berhasil terkirim ke nomor tujuan
+			console.log(
+				`Message${messageId ? ` [ID: ${messageId}]` : ""} sent successfully to ${formattedNumber}${recipientId ? ` (ID: ${recipientId})` : ""}`,
+			);
 		} catch (error) {
 			if (error instanceof WhatsAppError) {
 				throw error;
