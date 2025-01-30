@@ -101,7 +101,7 @@ class WhatsAppService {
 
 			// Generate AI response
 			const { text: response } = await generateText({
-				model: openai("gpt-4o-mini"),
+				model: openai("gpt-4"),
 				messages,
 			});
 
