@@ -82,8 +82,13 @@ class WhatsAppService {
 			// jika message.from sama dengan 6281235581851@c.us
 			// jika message.body ada kata "tiesa"
 			const isCalled =
-				message.body.includes("tiesa") || message.body.includes("Tiesa");
-			const isCalledFrom = message.from === "6281235581851@c.us";
+				message.body.includes("aik") ||
+				message.body.includes("kelasinovatif") ||
+				message.body.includes("wulang");
+			const isCalledFrom =
+				message.from === "6281235581851@c.us" ||
+				message.from === "6285712208535@c.us" ||
+				message.from === "6282323363406@c.us";
 			if (isCalled && isCalledFrom) {
 				await this.handleMessage(message);
 			}
