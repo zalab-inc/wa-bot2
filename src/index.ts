@@ -103,7 +103,8 @@ class WhatsAppService {
 			// Generate AI response
 			const { text: response } = await generateText({
 				model: openai("gpt-4"),
-				messages,
+				system: systemPrompt,
+				prompt: message.body,
 			});
 
 			// Send response
@@ -183,21 +184,37 @@ class WhatsAppService {
 		currentMessage: string,
 	): Promise<CoreMessage[]> {
 		const history = await this.getChatHistory(phoneNumber);
-		const messages: CoreMessage[] = [
-			{
-				role: "system",
-				content: systemPrompt,
-			} as CoreSystemMessage,
-		];
+		const messages: CoreMessage[] = [];
 
+		// Add system message
+		messages.push({
+			role: "system",
+			content: systemPrompt,
+			id: "system-1",
+		} as CoreSystemMessage);
+
+		// Add chat history
 		for (const chat of history) {
 			messages.push(
-				{ role: "user", content: chat.message } as CoreUserMessage,
-				{ role: "assistant", content: chat.response } as CoreAssistantMessage,
+				{
+					role: "user",
+					content: chat.message,
+					id: `user-${chat.created_at.getTime()}`,
+				} as CoreUserMessage,
+				{
+					role: "assistant",
+					content: chat.response,
+					id: `assistant-${chat.created_at.getTime()}`,
+				} as CoreAssistantMessage,
 			);
 		}
 
-		messages.push({ role: "user", content: currentMessage } as CoreUserMessage);
+		// Add current message
+		messages.push({
+			role: "user",
+			content: currentMessage,
+			id: `user-${Date.now()}`,
+		} as CoreUserMessage);
 
 		return messages;
 	}
