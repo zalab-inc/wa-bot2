@@ -3,6 +3,14 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+// Add debug logging
+console.log("Attempting database connection with:", {
+	host: process.env.DB_HOST,
+	user: process.env.DB_USER,
+	database: process.env.DB_NAME,
+	client: "mysql2",
+});
+
 export const db = knex({
 	client: "mysql2",
 	connection: {
@@ -10,29 +18,33 @@ export const db = knex({
 		user: process.env.DB_USER,
 		password: process.env.DB_PASSWORD,
 		database: process.env.DB_NAME,
+		charset: "utf8mb4",
+	},
+	pool: {
+		min: 2,
+		max: 10,
 	},
 });
 
-// Simple connection test function
+// Modified test connection function
 export async function testConnection() {
 	try {
-		await db.raw("SELECT 1");
-		console.log("Database connection successful!");
+		const result = await db.raw("SELECT 1 as test");
+		console.log("Raw connection test result:", result);
 		return true;
-	} catch (error) {
-		console.error("Database connection failed:", error);
+	} catch (error: unknown) {
+		const err = error as {
+			code?: string;
+			errno?: number;
+			sqlState?: string;
+			sqlMessage?: string;
+		};
+		console.error("Detailed connection error:", {
+			code: err.code,
+			errno: err.errno,
+			sqlState: err.sqlState,
+			sqlMessage: err.sqlMessage,
+		});
 		return false;
 	}
 }
-
-// In src/config/database.ts
-console.log("Database connection config:", {
-	host: process.env.DB_HOST,
-	user: process.env.DB_USER,
-	database: process.env.DB_NAME,
-});
-
-// Test the connection explicitly
-testConnection()
-	.then((success) => console.log("Connection test result:", success))
-	.catch((error) => console.error("Connection test error:", error));
