@@ -78,9 +78,15 @@ class WhatsAppService {
 		// AI Message Handler
 		this.client.on("message", async (message: Message) => {
 			if (message.fromMe) return;
-			console.log("Message received:", message.from);
-			console.log("Message body:", message.body);
-			await this.handleMessage(message);
+
+			// jika message.from sama dengan 6281235581851@c.us
+			// jika message.body ada kata "tiesa"
+			if (
+				message.from === "6281235581851@c.us" &&
+				message.body.includes("tiesa")
+			) {
+				await this.handleMessage(message);
+			}
 		});
 	}
 
