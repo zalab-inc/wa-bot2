@@ -83,7 +83,7 @@ class WhatsAppService {
 			// jika message.body ada kata "tiesa"
 			if (
 				message.from === "6281235581851@c.us" &&
-				message.body.includes("tiesa")
+				message.body.toLowerCase().includes("tiesa")
 			) {
 				await this.handleMessage(message);
 			}
@@ -109,7 +109,7 @@ class WhatsAppService {
 
 			// Generate AI response
 			const { text: response } = await generateText({
-				model: openai("gpt-4"),
+				model: openai("gpt-4o-mini"),
 				messages,
 			});
 
