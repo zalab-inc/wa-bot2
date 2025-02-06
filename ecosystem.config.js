@@ -1,7 +1,7 @@
 module.exports = {
   apps: [{
     name: "wa-bot",
-    script: "./src/index.ts",
+    script: "./dist/index.ts",
     interpreter: "ts-node",
     watch: true,
     ignore_watch: ["node_modules"],
