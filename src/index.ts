@@ -1,5 +1,4 @@
 import { Client, LocalAuth, type Message } from "whatsapp-web.js";
-import { config } from "./config/env";
 import { openai } from "@ai-sdk/openai";
 import {
 	generateText,
@@ -79,7 +78,20 @@ class WhatsAppService {
 		// AI Message Handler
 		this.client.on("message", async (message: Message) => {
 			if (message.fromMe) return;
-			await this.handleMessage(message);
+
+			// jika message.from sama dengan 6281235581851@c.us
+			// jika message.body ada kata "tiesa"
+			const isCalled =
+				message.body.includes("aik") ||
+				message.body.includes("kelasinovatif") ||
+				message.body.includes("wulang");
+			const isCalledFrom =
+				message.from === "6281235581851@c.us" ||
+				message.from === "6285712208535@c.us" ||
+				message.from === "6282323363406@c.us";
+			if (isCalled && isCalledFrom) {
+				await this.handleMessage(message);
+			}
 		});
 	}
 
@@ -92,7 +104,8 @@ class WhatsAppService {
 		};
 
 		try {
-			console.log(`Received message from ${message.from}: ${message.body}`);
+			// console.log(`Received message from ${message.from}: ${message.body}`);
+			console.log(`Received message from ${message.from}`);
 
 			// Build conversation context with history
 			const messages = await this.buildConversationContext(
@@ -102,14 +115,13 @@ class WhatsAppService {
 
 			// Generate AI response
 			const { text: response } = await generateText({
-				model: openai("gpt-4"),
-				system: systemPrompt,
-				prompt: message.body,
+				model: openai("gpt-4o-mini"),
+				messages,
 			});
 
 			// Send response
 			await message.reply(response);
-			console.log(`Sent response to ${message.from}: ${response}`);
+			// console.log(`Sent response to ${message.from}: ${response}`);
 
 			// Update chat data
 			chatData.response = response;
@@ -129,7 +141,7 @@ class WhatsAppService {
 
 			try {
 				await message.reply(
-					"Sorry, there was an error processing your message. Please try again later.",
+					"Maaf, terjadi kesalahan saat memproses pesan Anda. Silakan coba lagi nanti.",
 				);
 			} catch (replyError) {
 				console.error("Error sending error message:", replyError);
@@ -152,10 +164,10 @@ class WhatsAppService {
 				error_message: chatData.error_message,
 			});
 
-			console.log("Chat saved successfully:", {
-				phone: chatData.phone_number,
-				status: chatData.is_sent ? "sent" : "failed",
-			});
+			// console.log("Chat saved successfully:", {
+			// 	phone: chatData.phone_number,
+			// 	status: chatData.is_sent ? "sent" : "failed",
+			// });
 		} catch (error) {
 			console.error("Error saving chat to database:", error);
 		}
@@ -186,35 +198,30 @@ class WhatsAppService {
 		const history = await this.getChatHistory(phoneNumber);
 		const messages: CoreMessage[] = [];
 
-		// Add system message
-		messages.push({
+		// Add system message with proper typing
+		const systemMessage: CoreSystemMessage = {
 			role: "system",
 			content: systemPrompt,
-			id: "system-1",
-		} as CoreSystemMessage);
+		};
+		messages.push(systemMessage);
 
-		// Add chat history
 		for (const chat of history) {
-			messages.push(
-				{
-					role: "user",
-					content: chat.message,
-					id: `user-${chat.created_at.getTime()}`,
-				} as CoreUserMessage,
-				{
-					role: "assistant",
-					content: chat.response,
-					id: `assistant-${chat.created_at.getTime()}`,
-				} as CoreAssistantMessage,
-			);
+			const userMessage: CoreUserMessage = {
+				role: "user",
+				content: chat.message,
+			};
+			const assistantMessage: CoreAssistantMessage = {
+				role: "assistant",
+				content: chat.response,
+			};
+			messages.push(userMessage, assistantMessage);
 		}
 
-		// Add current message
-		messages.push({
+		const finalUserMessage: CoreUserMessage = {
 			role: "user",
 			content: currentMessage,
-			id: `user-${Date.now()}`,
-		} as CoreUserMessage);
+		};
+		messages.push(finalUserMessage);
 
 		return messages;
 	}
