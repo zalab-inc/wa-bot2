@@ -99,7 +99,8 @@ class WhatsAppService {
 		};
 
 		try {
-			console.log(`Received message from ${message.from}: ${message.body}`);
+			// console.log(`Received message from ${message.from}: ${message.body}`);
+			console.log(`Received message from ${message.from}`);
 
 			// Build conversation context with history
 			const messages = await this.buildConversationContext(
@@ -114,8 +115,8 @@ class WhatsAppService {
 			});
 
 			// Send response
-			await message.reply(response);
-			console.log(`Sent response to ${message.from}: ${response}`);
+			// await message.reply(response);
+			// console.log(`Sent response to ${message.from}: ${response}`);
 
 			// Update chat data
 			chatData.response = response;
