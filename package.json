@@ -6,15 +6,12 @@
 	"scripts": {
 		"dev": "ts-node src/index.ts",
 		"build": "tsc",
-		"start": "ts-node src/index.js"
+		"start": "node dist/index.js"
 	},
-	"keywords": [
-		"whatsapp",
-		"bot",
-		"typescript"
-	],
+	"keywords": ["whatsapp", "bot", "typescript"],
 	"author": "",
 	"license": "ISC",
+
 	"dependencies": {
 		"@ai-sdk/openai": "^1.1.5",
 		"ai": "^4.1.11",
@@ -35,8 +32,6 @@
 		"@types/qrcode-terminal": "^0.12.2"
 	},
 	"pnpm": {
-		"onlyBuiltDependencies": [
-			"puppeteer"
-		]
+		"onlyBuiltDependencies": ["puppeteer"]
 	}
 }
