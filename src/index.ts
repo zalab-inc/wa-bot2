@@ -87,10 +87,11 @@ class WhatsAppService {
 			// Get the actual sender ID from group message
 			const senderId = message.author || message.from;
 
-			const isCalledFrom =
-				senderId === "6281235581851@c.us" ||
-				senderId === "6285712208535@c.us" ||
-				senderId === "6282323363406@c.us";
+			const isCalledFrom = [
+				"6281235581851",
+				"6285712208535",
+				"6282323363406",
+			].includes(senderId);
 
 			if (isCalled && isCalledFrom) {
 				await this.handleMessage(message);
