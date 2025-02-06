@@ -115,7 +115,7 @@ class WhatsAppService {
 			});
 
 			// Send response
-			// await message.reply(response);
+			await message.reply(response);
 			// console.log(`Sent response to ${message.from}: ${response}`);
 
 			// Update chat data
@@ -136,7 +136,7 @@ class WhatsAppService {
 
 			try {
 				await message.reply(
-					"Sorry, there was an error processing your message. Please try again later.",
+					"Maaf, terjadi kesalahan saat memproses pesan Anda. Silakan coba lagi nanti.",
 				);
 			} catch (replyError) {
 				console.error("Error sending error message:", replyError);
@@ -159,10 +159,10 @@ class WhatsAppService {
 				error_message: chatData.error_message,
 			});
 
-			console.log("Chat saved successfully:", {
-				phone: chatData.phone_number,
-				status: chatData.is_sent ? "sent" : "failed",
-			});
+			// console.log("Chat saved successfully:", {
+			// 	phone: chatData.phone_number,
+			// 	status: chatData.is_sent ? "sent" : "failed",
+			// });
 		} catch (error) {
 			console.error("Error saving chat to database:", error);
 		}
