@@ -4,16 +4,9 @@
 	"description": "WhatsApp message sender using whatsapp-web.js",
 	"main": "dist/index.js",
 	"scripts": {
-		"start": "ts-node src/index.ts",
 		"dev": "ts-node src/index.ts",
 		"build": "tsc",
-		"serve": "node dist/index.js",
-		"pm2:start": "pm2 start npm --name wa-bot -- serve",
-		"pm2:stop": "pm2 stop wa-bot",
-		"pm2:restart": "pm2 restart wa-bot",
-		"pm2:delete": "pm2 delete wa-bot",
-		"pm2:logs": "pm2 logs wa-bot",
-		"pm2:monit": "pm2 monit"
+		"start": "node dist/index.js"
 	},
 	"keywords": ["whatsapp", "bot", "typescript"],
 	"author": "",
