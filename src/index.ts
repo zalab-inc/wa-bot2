@@ -79,16 +79,19 @@ class WhatsAppService {
 		this.client.on("message", async (message: Message) => {
 			if (message.fromMe) return;
 
-			// jika message.from sama dengan 6281235581851@c.us
-			// jika message.body ada kata "tiesa"
 			const isCalled =
-				message.body.includes("aik") ||
-				message.body.includes("kelasinovatif") ||
-				message.body.includes("wulang");
+				message.body.toLowerCase().includes("aik") ||
+				message.body.toLowerCase().includes("kelasinovatif") ||
+				message.body.toLowerCase().includes("wulang");
+
+			// Get the actual sender ID from group message
+			const senderId = message.author || message.from;
+
 			const isCalledFrom =
-				message.from === "6281235581851@c.us" ||
-				message.from === "6285712208535@c.us" ||
-				message.from === "6282323363406@c.us";
+				senderId === "6281235581851@c.us" ||
+				senderId === "6285712208535@c.us" ||
+				senderId === "6282323363406@c.us";
+
 			if (isCalled && isCalledFrom) {
 				await this.handleMessage(message);
 			}
