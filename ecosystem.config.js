@@ -1,5 +1,4 @@
-module.exports = {
-  apps: [{
+export const apps = [{
     name: "wa-bot",
     script: "./dist/index.ts",
     interpreter: "ts-node",
@@ -9,5 +8,4 @@ module.exports = {
     restart_delay: 3000,
     autorestart: true,
     exp_backoff_restart_delay: 100
-  }]
-}
+}];
