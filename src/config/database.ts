@@ -24,3 +24,15 @@ export async function testConnection() {
 		return false;
 	}
 }
+
+// In src/config/database.ts
+console.log("Database connection config:", {
+	host: process.env.DB_HOST,
+	user: process.env.DB_USER,
+	database: process.env.DB_NAME,
+});
+
+// Test the connection explicitly
+testConnection()
+	.then((success) => console.log("Connection test result:", success))
+	.catch((error) => console.error("Connection test error:", error));
