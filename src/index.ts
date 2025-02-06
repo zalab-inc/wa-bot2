@@ -87,14 +87,28 @@ class WhatsAppService {
 			// Get the actual sender ID from group message
 			const senderId = message.author || message.from;
 
-			const isCalledFrom = [
+			// Extract phone number from sender ID
+			const phoneNumber = senderId.split("@")[0].split("-")[0];
+
+			const allowedNumbers = [
 				"6281235581851",
 				"6285712208535",
 				"6282323363406",
-			].includes(senderId);
+			];
+
+			const isCalledFrom = allowedNumbers.includes(phoneNumber);
 
 			if (isCalled && isCalledFrom) {
+				console.log("Processing message from:", phoneNumber);
 				await this.handleMessage(message);
+			} else {
+				console.log(
+					"Message not processed. Called:",
+					isCalled,
+					"From allowed number:",
+					isCalledFrom,
+				);
+				console.log("Phone number extracted:", phoneNumber);
 			}
 		});
 	}
