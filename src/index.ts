@@ -196,21 +196,32 @@ class WhatsAppService {
 		currentMessage: string,
 	): Promise<CoreMessage[]> {
 		const history = await this.getChatHistory(phoneNumber);
-		const messages: CoreMessage[] = [
-			{
-				role: "system",
-				content: systemPrompt,
-			} as CoreSystemMessage,
-		];
+		const messages: CoreMessage[] = [];
+
+		// Add system message with proper typing
+		const systemMessage: CoreSystemMessage = {
+			role: "system",
+			content: systemPrompt,
+		};
+		messages.push(systemMessage);
 
 		for (const chat of history) {
-			messages.push(
-				{ role: "user", content: chat.message } as CoreUserMessage,
-				{ role: "assistant", content: chat.response } as CoreAssistantMessage,
-			);
+			const userMessage: CoreUserMessage = {
+				role: "user",
+				content: chat.message,
+			};
+			const assistantMessage: CoreAssistantMessage = {
+				role: "assistant",
+				content: chat.response,
+			};
+			messages.push(userMessage, assistantMessage);
 		}
 
-		messages.push({ role: "user", content: currentMessage } as CoreUserMessage);
+		const finalUserMessage: CoreUserMessage = {
+			role: "user",
+			content: currentMessage,
+		};
+		messages.push(finalUserMessage);
 
 		return messages;
 	}
