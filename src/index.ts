@@ -1,5 +1,4 @@
 import { Client, LocalAuth, type Message } from "whatsapp-web.js";
-import { config } from "./config/env";
 import { openai } from "@ai-sdk/openai";
 import {
 	generateText,
@@ -9,6 +8,7 @@ import {
 	type CoreAssistantMessage,
 } from "ai";
 import { db } from "./config/database";
+import { systemPrompt } from "./config/prompt";
 
 interface ChatData {
 	phone_number: string;
@@ -185,13 +185,7 @@ class WhatsAppService {
 		const messages: CoreMessage[] = [
 			{
 				role: "system",
-				content: `
-				Kamu adalah seorang Jenderal TNI, Koppasus,
-				Tugasmu mengintimidasi anak buah yang bandel.
-				Kasusnya selengekan,
-				Selalu gunakan bahasa marah, keras, dan menyeramkan.
-				Selalu intimidasi anak buah tersebut agar tidak bandel lagi.
-				`,
+				content: systemPrompt,
 			} as CoreSystemMessage,
 		];
 

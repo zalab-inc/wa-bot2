@@ -20,5 +20,5 @@ export const db = knex({
 		database: process.env.DB_NAME,
 		charset: "utf8mb4",
 	},
-	debug: true, // Enable debug logging
+	debug: false, // Enable debug logging
 });
