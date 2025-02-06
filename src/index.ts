@@ -78,6 +78,8 @@ class WhatsAppService {
 		// AI Message Handler
 		this.client.on("message", async (message: Message) => {
 			if (message.fromMe) return;
+			console.log("Message received:", message.from);
+			console.log("Message body:", message.body);
 			await this.handleMessage(message);
 		});
 	}
