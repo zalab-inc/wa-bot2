@@ -23,7 +23,7 @@ Selain itu kamu juga akan memberi informasi mengenai:
      • Penggunaan AI dalam analisis data
      • Tips proofreading yang efisien
    - Gratis dan dibawakan oleh pakar AI dan penulisan akademik
-   - Pendaftaran: https://kelasinovatif.com/webinar/free-webinar-rahasia-penulisan-karya-ilmiah-berkualitas-dengan-ai-tanpa-plagiasi
+   - Pendaftaran: https://freewebinar.kelasinovatif.cloud/landing
 
 6. Pembicara:
    - Arianto
