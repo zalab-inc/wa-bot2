@@ -150,10 +150,7 @@ class WhatsAppService {
 
 			try {
 				await message.reply(
-					"Maaf, terjadi kesalahan saat memproses pesan Anda. Silakan coba lagi nanti." +
-						"\n\n" +
-						chatData.error_message,
-				);
+					"Maaf, terjadi kesalahan saat memproses pesan Anda. Silakan coba lagi nanti.");
 			} catch (replyError) {
 				console.error("Error sending error message:", replyError);
 			}
